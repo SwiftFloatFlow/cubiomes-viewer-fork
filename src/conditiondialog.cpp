@@ -100,6 +100,7 @@ ConditionDialog::ConditionDialog(FormConditions *parent, MapView *mapview, Confi
     QIntValidator *uintval = new QIntValidator(0, 30e6, this);
     ui->lineSquare->setValidator(uintval);
     ui->lineRadius->setValidator(uintval);
+    ui->lineRadiusMin->setValidator(uintval);
 
     ui->lineSpiralStep->setValidator(new QIntValidator(1, 0xffff, this));
 
@@ -390,6 +391,8 @@ ConditionDialog::ConditionDialog(FormConditions *parent, MapView *mapview, Confi
             ui->lineRadius->setText(QString::number(cond.rmax - 1));
             ui->checkRadius->setChecked(true);
         }
+        if (cond.rmin > 0)
+            ui->lineRadiusMin->setText(QString::number(cond.rmin - 1));
 
         for (const auto& it : biomecboxes)
         {
@@ -521,6 +524,8 @@ void ConditionDialog::updateMode()
     if (ui->checkRadius->isEnabled() && ui->checkRadius->isChecked())
     {
         ui->lineRadius->setEnabled(true);
+        ui->labelRadiusMin->setEnabled(true);
+        ui->lineRadiusMin->setEnabled(true);
 
         ui->radioSquare->setEnabled(false);
         ui->radioCustom->setEnabled(false);
@@ -539,6 +544,8 @@ void ConditionDialog::updateMode()
     else
     {
         ui->lineRadius->setEnabled(false);
+        ui->labelRadiusMin->setEnabled(false);
+        ui->lineRadiusMin->setEnabled(false);
 
         ui->radioSquare->setEnabled(p2);
         ui->radioCustom->setEnabled(p2);
@@ -1052,9 +1059,16 @@ void ConditionDialog::onAccept()
     }
 
     if (ui->checkRadius->isEnabled() && ui->checkRadius->isChecked())
+    {
         c.rmax = ui->lineRadius->text().toInt() + 1;
+        int rmin = ui->lineRadiusMin->text().toInt();
+        c.rmin = (rmin > 0 && rmin < c.rmax - 1) ? rmin + 1 : 0;
+    }
     else
+    {
         c.rmax = 0;
+        c.rmin = 0;
+    }
 
     c.y = ui->comboY1->currentText().section(' ', 0, 0).toInt();
 

@@ -289,6 +289,20 @@
             </property>
            </widget>
           </item>
+          <item row="4" column="0" colspan="4">
+           <widget class="QLabel" name="labelRadiusMin">
+            <property name="text">
+             <string>Min radius (exclude inside):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="5" colspan="2">
+           <widget class="QLineEdit" name="lineRadiusMin">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
           <item row="5" column="0">
            <widget class="QRadioButton" name="radioCustom">
             <property name="text">

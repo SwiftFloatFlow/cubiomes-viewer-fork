@@ -632,6 +632,7 @@ struct /*__attribute__((packed))*/ Condition
     float       vmax;
     float       converage;
     float       confidence;
+    int32_t     rmin; // (<=0):disabled; (>0):strict inner radius (annulus)
 
     // generated members - initialized when the search is started
     uint8_t     generated_start[0]; // address dummy
@@ -650,7 +651,7 @@ struct /*__attribute__((packed))*/ Condition
 };
 
 static_assert(
-    offsetof(Condition, generated_start) == 320,
+    offsetof(Condition, generated_start) == 324,
     "Layout of Condition has changed!"
 );
 

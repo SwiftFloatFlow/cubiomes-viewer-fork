@@ -1340,6 +1340,8 @@ void QWorld::draw(QPainter& painter, int vw, int vh, qreal focusx, qreal focusz,
             break;
         case Shape::CIRCLE:
             painter.drawEllipse(QPointF(x1, y1), r, r);
+            if (s.r2 > 0)
+                painter.drawEllipse(QPointF(x1, y1), s.r2 * blocks2pix, s.r2 * blocks2pix);
             break;
         }
     }

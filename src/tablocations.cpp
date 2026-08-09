@@ -434,6 +434,7 @@ void TabLocations::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
             s.type = Shape::CIRCLE;
             s.p1 = s.p2 = Pos{0,0};
             s.r = c.rmax - 1;
+            s.r2 = c.rmin > 0 ? c.rmin - 1 : 0;
         }
         else
         {
@@ -441,6 +442,7 @@ void TabLocations::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
             s.p1 = Pos{c.x1, c.z1};
             s.p2 = Pos{c.x2+1, c.z2+1};
             s.r = 0;
+            s.r2 = 0;
         }
         if (QTreeWidgetItem *conditem = item->parent())
         {

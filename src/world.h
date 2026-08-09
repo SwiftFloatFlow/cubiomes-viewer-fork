@@ -125,6 +125,7 @@ struct Shape
     enum { RECT, LINE, CIRCLE } type;
     int dim;
     int r;
+    int r2; // inner radius (0: none)
     Pos p1, p2;
 };
 

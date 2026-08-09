@@ -75,7 +75,10 @@ QString Condition::summary(bool aligntab) const
 
     if (rmax > 0)
     {
-        s += QString::asprintf("r<%d", rmax-1);
+        if (rmin > 0)
+            s += QString::asprintf("r<%d,r>%d", rmax-1, rmin-1);
+        else
+            s += QString::asprintf("r<%d", rmax-1);
     }
     else
     {
@@ -384,6 +387,7 @@ int _testTreeAt(
         {   // run a spiral iterator over the rectangle
             int step = c.step ? c.step : 512;
             int rmax, x1, z1, x2, z2;
+            int64_t rmin;
             if (c.rmax > 0)
             {
                 rmax = c.rmax - 1;
@@ -392,10 +396,15 @@ int _testTreeAt(
                 x2 = at.x + rmax;
                 z2 = at.z + rmax;
                 rmax = rmax * rmax + 1;
+                if (c.rmin > 0)
+                    rmin = (int64_t)(c.rmin - 1) * (c.rmin - 1) + 1;
+                else
+                    rmin = 0;
             }
             else
             {
                 rmax = 0;
+                rmin = 0;
                 x1 = c.x1 + at.x;
                 z1 = c.z1 + at.z;
                 x2 = c.x2 + at.x;
@@ -429,6 +438,8 @@ int _testTreeAt(
                         int dz = pos.z - at.z;
                         int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
                         inr = (rsq < rmax);
+                        if (inr && rmin && rsq < rmin)
+                            inr = false;
                     }
                     else if (pos.x < x1 || pos.x > x2 || pos.z < z1 || pos.z > z2)
                     {
@@ -976,6 +987,7 @@ struct sample_boime_t
     const Condition *cond;
     Pos at;
     int rmaxsq;
+    int rminsq;
     int n;
     int64_t xsum;
     int64_t zsum;
@@ -995,6 +1007,8 @@ static int f_biome_sampler(Generator *g, int scale, int x, int y, int z, void *d
         int dz = (z * scale) - info->at.z;
         int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
         if (rsq >= info->rmaxsq)
+            return -1;
+        if (info->rminsq && rsq < info->rminsq)
             return -1;
     }
 
@@ -1037,6 +1051,8 @@ static int f_noise_sampler(Generator *g, int scale, int x, int y, int z, void *d
         int dz = (z * scale) - info->at.z;
         int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
         if (rsq >= info->rmaxsq)
+            return -1;
+        if (info->rminsq && rsq < info->rminsq)
             return -1;
     }
 
@@ -1092,6 +1108,7 @@ testCondAt(
     int st;
     int i, n, icnt;
     int64_t s, r, rmin, rmax;
+    int64_t rminsq; // strict inner radius squared (annulus), 0 if disabled
     const uint64_t *seeds;
     Pos *p = getPosBuf(0);
 
@@ -1112,10 +1129,15 @@ testCondAt(
         x2 = at.x + rmax;
         z2 = at.z + rmax;
         rmax = rmax * rmax + 1;
+        if (cond->rmin > 0)
+            rminsq = (int64_t)(cond->rmin - 1) * (cond->rmin - 1) + 1;
+        else
+            rminsq = 0;
     }
     else
     {
         rmax = 0;
+        rminsq = 0;
         x1 = cond->x1 + at.x;
         z1 = cond->z1 + at.z;
         x2 = cond->x2 + at.x;
@@ -1186,6 +1208,8 @@ L_qh_any:
                 int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
                 if (rsq >= rmax)
                     continue;
+                if (rminsq && rsq < rminsq)
+                    continue;
             }
             else if (pc.x < x1 || pc.x > x2 || pc.z < z1 || pc.z > z2)
             {
@@ -1239,6 +1263,8 @@ L_qm_any:
                 int dz = pc.z - at.z;
                 int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
                 if (rsq >= rmax)
+                    continue;
+                if (rminsq && rsq < rminsq)
                     continue;
             }
             else if (pc.x < x1 || pc.x > x2 || pc.z < z1 || pc.z > z2)
@@ -1324,6 +1350,8 @@ L_qm_any:
                     int dz = pc.z - at.z;
                     int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
                     if (rsq >= rmax)
+                        continue;
+                    if (rminsq && rsq < rminsq)
                         continue;
                 }
                 else if (pc.x < x1 || pc.x > x2 || pc.z < z1 || pc.z > z2)
@@ -1455,7 +1483,7 @@ L_qm_any:
                     int dx = cent[i].x - at.x;
                     int dz = cent[i].z - at.z;
                     int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
-                    if (rsq < rmax)
+                    if (rsq < rmax && (!rminsq || rsq >= rminsq))
                         cent[j++] = cent[i];
                 }
                 *imax = icnt = j;
@@ -1486,10 +1514,10 @@ L_qm_any:
             {
                 if (rmax)
                 {   // skip instances outside the radius
-                    int dx = cent[i].x - at.x;
-                    int dz = cent[i].z - at.z;
+                    int dx = p[i].x - at.x;
+                    int dz = p[i].z - at.z;
                     int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
-                    if (rsq >= rmax)
+                    if (rsq >= rmax || (rminsq && rsq < rminsq))
                         continue;
                 }
                 if (cond->skipref && p[i].x == at.x && p[i].z == at.z)
@@ -1533,6 +1561,8 @@ L_qm_any:
             int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
             if (rsq >= rmax)
                 return COND_FAILED;
+            if (rminsq && rsq < rminsq)
+                return COND_FAILED;
         }
         else if (pc.x < x1 || pc.x > x2 || pc.z < z1 || pc.z > z2)
         {
@@ -1558,6 +1588,8 @@ L_qm_any:
             int dz = pc.z - at.z;
             int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
             if (rsq > rmax)
+                return COND_FAILED;
+            if (rminsq && rsq < rminsq)
                 return COND_FAILED;
         }
         else
@@ -1670,7 +1702,7 @@ L_qm_any:
                     int dx = sh.pos.x - at.x;
                     int dz = sh.pos.z - at.z;
                     int64_t rsq = dx*(int64_t)dx + dz*(int64_t)dz;
-                    inside = (rsq < rmax);
+                    inside = (rsq < rmax) && (!rminsq || rsq >= rminsq);
                 }
                 else
                 {
@@ -1806,6 +1838,7 @@ L_qm_any:
             sample.cond = cond;
             sample.at = at;
             sample.rmaxsq = rmax;
+            sample.rminsq = (int)rminsq;
             sample.n = 0;
             sample.xsum = 0;
             sample.zsum = 0;
