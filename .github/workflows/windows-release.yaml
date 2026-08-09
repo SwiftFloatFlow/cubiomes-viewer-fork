@@ -56,6 +56,7 @@ jobs:
               curl -L --retry 3 -o qtbase.zip %QTBASE_URL%
               powershell -Command "Expand-Archive -Force qtbase.zip ."
               powershell -NoProfile -Command "$f='qtbase-everywhere-src-5.15.2\src\corelib\global\qglobal.h'; $c=Get-Content $f -Raw; if($c.Contains('include <limits>')) { Write-Output 'qglobal.h already patched' } else { $c=$c.Replace('#  include <type_traits>','#  include <type_traits>' + [char]13 + [char]10 + '#  include <limits>'); Set-Content $f $c -NoNewline; Write-Output 'patched qglobal.h: added #include <limits>' }"
+              powershell -NoProfile -Command "$f='qtbase-everywhere-src-5.15.2\src\corelib\io\qfilesystemengine_win.cpp'; $c=Get-Content $f -Raw; if($c.Contains('_WIN32_WINNT < 0x0602')) { Write-Output 'qfilesystemengine_win.cpp already patched' } else { $c=$c.Replace('#if defined(Q_CC_MINGW) && WINVER < 0x0602 //  Windows 8 onwards','#if defined(Q_CC_MINGW) && WINVER < 0x0602 && _WIN32_WINNT < 0x0602 //  Windows 8 onwards'); Set-Content $f $c -NoNewline; Write-Output 'patched qfilesystemengine_win.cpp' }"
               cd qtbase-everywhere-src-5.15.2
               configure.bat -opensource -confirm-license -release -static -platform win32-g++ -prefix %QTPREFIX% -nomake examples -nomake tests -no-opengl -no-angle -no-icu -no-openssl -no-dbus -no-vulkan -no-egl -qt-zlib -qt-libpng -qt-libjpeg -qt-freetype -qt-pcre -qt-harfbuzz
               mingw32-make -j2
