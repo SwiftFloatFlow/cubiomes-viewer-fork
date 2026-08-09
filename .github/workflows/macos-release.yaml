@@ -2,11 +2,6 @@ name: macOS Release
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'trunk'
-    tags:
-      - 'v*'
 
 env:
   PROG:         cubiomes-viewer

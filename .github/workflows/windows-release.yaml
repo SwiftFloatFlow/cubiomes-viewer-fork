@@ -71,7 +71,7 @@ jobs:
         working-directory: ${{env.SOURCE_DIR}}
         run:  |
               "%QTPREFIX%\bin\qmake.exe" CONFIG+=release %SOURCE_DIR%
-              "%QTPREFIX%\bin\mingw32-make.exe"
+              mingw32-make
 
       - name: Package
         working-directory: ${{env.SOURCE_DIR}}
