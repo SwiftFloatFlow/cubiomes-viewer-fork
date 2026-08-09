@@ -275,34 +275,34 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="5" colspan="2">
-           <widget class="QLineEdit" name="lineSquare">
+<item row="4" column="5" colspan="2">
+            <widget class="QLineEdit" name="lineSquare">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="5" colspan="2">
+            <widget class="QLineEdit" name="lineRadius">
             <property name="text">
              <string>0</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="5" colspan="2">
-           <widget class="QLineEdit" name="lineRadius">
-            <property name="text">
-             <string>0</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="4">
-           <widget class="QLabel" name="labelRadiusMin">
-            <property name="text">
-             <string>Min radius (exclude inside):</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="5" colspan="2">
-           <widget class="QLineEdit" name="lineRadiusMin">
-            <property name="text">
-             <string>0</string>
-            </property>
-           </widget>
-          </item>
+<item row="3" column="0" colspan="4">
+            <widget class="QLabel" name="labelRadiusMin">
+             <property name="text">
+              <string>Min radius (exclude inside):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="5" colspan="2">
+            <widget class="QLineEdit" name="lineRadiusMin">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
           <item row="5" column="0">
            <widget class="QRadioButton" name="radioCustom">
             <property name="text">
@@ -317,8 +317,8 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="4">
-           <widget class="QPushButton" name="buttonAreaInfo">
+<item row="4" column="4">
+             <widget class="QPushButton" name="buttonAreaInfo">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -373,8 +373,8 @@ QPushButton:hover {
             </item>
            </widget>
           </item>
-          <item row="3" column="0" colspan="4">
-           <widget class="QRadioButton" name="radioSquare">
+<item row="4" column="0" colspan="4">
+            <widget class="QRadioButton" name="radioSquare">
             <property name="text">
              <string>Within centred square of side:</string>
             </property>

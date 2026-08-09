@@ -39,6 +39,11 @@ jobs:
           cache:        true
           setup-python: false
 
+      - name: Regenerate translations
+        working-directory: ${{env.SOURCE_DIR}}
+        run:  |
+              lrelease rc\lang\en_US.ts rc\lang\de_DE.ts rc\lang\zh_CN.ts
+
       - name: Build
         working-directory: ${{env.SOURCE_DIR}}
         run:  |

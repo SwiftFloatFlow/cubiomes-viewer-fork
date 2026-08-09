@@ -847,6 +847,11 @@
         <translation>半径:</translation>
     </message>
     <message>
+        <location filename="../../src/conditiondialog.ui" line="292"/>
+        <source>Min radius (exclude inside):</source>
+        <translation>最小半径（排除内部）:</translation>
+    </message>
+    <message>
         <location filename="../../src/conditiondialog.ui" line="420"/>
         <source>Details</source>
         <translation>详细信息</translation>
