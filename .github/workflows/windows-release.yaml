@@ -55,6 +55,7 @@ jobs:
               perl -v >nul 2>&1 || echo "WARNING: perl not found"
               curl -L --retry 3 -o qtbase.zip %QTBASE_URL%
               powershell -Command "Expand-Archive -Force qtbase.zip ."
+              powershell -NoProfile -Command "$f='qtbase-everywhere-src-5.15.2\src\corelib\global\qglobal.h'; $c=Get-Content $f -Raw; if($c.Contains('include <limits>')) { Write-Output 'qglobal.h already patched' } else { $c=$c.Replace('#  include <type_traits>','#  include <type_traits>' + [char]13 + [char]10 + '#  include <limits>'); Set-Content $f $c -NoNewline; Write-Output 'patched qglobal.h: added #include <limits>' }"
               cd qtbase-everywhere-src-5.15.2
               configure.bat -opensource -confirm-license -release -static -platform win32-g++ -prefix %QTPREFIX% -nomake examples -nomake tests -no-opengl -no-angle -no-icu -no-openssl -no-dbus -no-vulkan -no-egl -qt-zlib -qt-libpng -qt-libjpeg -qt-freetype -qt-pcre -qt-harfbuzz
               mingw32-make -j2
