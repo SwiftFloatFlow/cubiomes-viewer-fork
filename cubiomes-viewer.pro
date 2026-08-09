@@ -55,6 +55,7 @@ wasm: {
 
 static_gnu: {
     LIBS += -static -static-libgcc -static-libstdc++
+    QTPLUGIN += qwindows qico
 }
 
 CONFIG(debug, debug|release): {
